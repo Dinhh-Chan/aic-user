@@ -31,17 +31,31 @@ export default function SubmitPage() {
   const [sourceCodeLink, setSourceCodeLink] = useState("")
   const [successOpen, setSuccessOpen] = useState(false)
 
+  // Chuẩn hóa text trước khi gửi: gom nhiều khoảng trắng thành 1 và trim hai đầu
+  const normalizeText = (value: string) => value.replace(/\s+/g, " ").trim()
+  // Chuẩn hóa url: chỉ cần trim hai đầu
+  const normalizeUrl = (value: string) => value.trim()
+
   const handleTeamSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setErrorMsg(null)
-    if (!teamData.studentId || !teamData.teamName) {
+    const sanitizedTeam = {
+      teamName: normalizeText(teamData.teamName),
+      leaderName: normalizeText(teamData.leaderName),
+      studentId: normalizeText(teamData.studentId),
+      email: normalizeText(teamData.email),
+      phone: normalizeText(teamData.phone),
+    }
+    // cập nhật lại state để UI đồng nhất với dữ liệu đã chuẩn hóa
+    setTeamData(sanitizedTeam)
+    if (!sanitizedTeam.studentId || !sanitizedTeam.teamName) {
       setErrorMsg("Vui lòng nhập tên đội và mã sinh viên (leader_code)")
       return
     }
     try {
       setLoading(true)
       const url = apiUrl(
-        `/teams/teams-ver2/check-leader-team?leader_code=${encodeURIComponent(teamData.studentId)}&Team_name=${encodeURIComponent(teamData.teamName)}`
+        `/teams/teams-ver2/check-leader-team?leader_code=${encodeURIComponent(sanitizedTeam.studentId)}&Team_name=${encodeURIComponent(sanitizedTeam.teamName)}`
       )
       const res = await fetch(url, { method: 'POST' })
       if (!res.ok) {
@@ -68,16 +82,29 @@ export default function SubmitPage() {
     }
     try {
       setLoading(true)
+      // Chuẩn hóa dữ liệu trước khi gửi
+      const sanitizedTeam = {
+        teamName: normalizeText(teamData.teamName),
+        leaderName: normalizeText(teamData.leaderName),
+        studentId: normalizeText(teamData.studentId),
+        email: normalizeText(teamData.email),
+        phone: normalizeText(teamData.phone),
+      }
+      const sanitizedReport = normalizeUrl(reportLink)
+      const sanitizedSlide = normalizeUrl(slideLink)
+      const sanitizedVideo = normalizeUrl(videoLink)
+      const sanitizedSource = normalizeUrl(sourceCodeLink)
+
       const form = new FormData()
-      if (teamData.teamName) form.append('team_name', teamData.teamName)
-      if (teamData.leaderName) form.append('name_leader', teamData.leaderName)
-      if (teamData.studentId) form.append('code_leader', teamData.studentId)
-      if (teamData.email) form.append('email_ptit_leader', teamData.email)
-      if (teamData.phone) form.append('phone_leader', teamData.phone)
-      if (reportLink) form.append('survey_link', reportLink)
-      if (slideLink) form.append('slide_link', slideLink)
-      if (videoLink) form.append('video_link', videoLink)
-      if (sourceCodeLink) form.append('source_code_link', sourceCodeLink)
+      if (sanitizedTeam.teamName) form.append('team_name', sanitizedTeam.teamName)
+      if (sanitizedTeam.leaderName) form.append('name_leader', sanitizedTeam.leaderName)
+      if (sanitizedTeam.studentId) form.append('code_leader', sanitizedTeam.studentId)
+      if (sanitizedTeam.email) form.append('email_ptit_leader', sanitizedTeam.email)
+      if (sanitizedTeam.phone) form.append('phone_leader', sanitizedTeam.phone)
+      if (sanitizedReport) form.append('survey_link', sanitizedReport)
+      if (sanitizedSlide) form.append('slide_link', sanitizedSlide)
+      if (sanitizedVideo) form.append('video_link', sanitizedVideo)
+      if (sanitizedSource) form.append('source_code_link', sanitizedSource)
       const url = apiUrl(`/teams/teams-ver2/${teamId}`)
       const res = await fetch(url, { method: 'PUT', body: form })
       if (!res.ok) {
