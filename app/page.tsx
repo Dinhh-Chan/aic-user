@@ -66,6 +66,14 @@ export default function HomePage() {
                 >
                   <Link href="#info">Tìm Hiểu Thêm</Link>
                 </Button>
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  className="text-lg px-8 py-4 hover-lift transition-all duration-300"
+                  asChild
+                >
+                  <Link href="/judges/login">Giám Khảo</Link>
+                </Button>
               </div>
             </div>
 

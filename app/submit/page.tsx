@@ -332,7 +332,7 @@ export default function SubmitPage() {
                   <div>
                     <label className="block text-sm font-medium mb-2 flex items-center gap-2">
                       <Code className="w-4 h-4" />
-                      Mã Nguồn (link repository) <span className="text-destructive">*</span>
+                      Mã Nguồn (link repository) <span className="text-muted-foreground">(Tùy chọn)</span>
                     </label>
                     <input
                       type="url"
@@ -340,7 +340,6 @@ export default function SubmitPage() {
                       placeholder="https://github.com/... hoặc link Drive"
                       value={sourceCodeLink}
                       onChange={(e) => setSourceCodeLink(e.target.value)}
-                      required
                     />
                   </div>
 
