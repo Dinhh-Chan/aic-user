@@ -341,7 +341,7 @@ export default function SubmitPage() {
                   <div>
                     <label className="block text-sm font-medium mb-2 flex items-center gap-2">
                       <Video className="w-4 h-4" />
-                      Video Demo Sản Phẩm (link YouTube) <span className="text-destructive">*</span>
+                      Video Demo Sản Phẩm (link YouTube) <span className="text-muted-foreground">(Tùy chọn)</span>
                     </label>
                     <p className="text-sm text-muted-foreground mb-3">
                       Dán link YouTube giới thiệu chức năng, giao diện sản phẩm
@@ -352,7 +352,6 @@ export default function SubmitPage() {
                       placeholder="https://youtube.com/watch?v=..."
                       value={videoLink}
                       onChange={(e) => setVideoLink(e.target.value)}
-                      required
                     />
                   </div>
 
