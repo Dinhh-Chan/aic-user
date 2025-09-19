@@ -72,7 +72,7 @@ export default function HomePage() {
                   className="text-lg px-8 py-4 hover-lift transition-all duration-300"
                   asChild
                 >
-                  <Link href="/judges/login">Giám Khảo</Link>
+                  <Link href="/judges/wheel">Giám Khảo</Link>
                 </Button>
               </div>
             </div>
