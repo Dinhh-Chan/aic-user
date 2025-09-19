@@ -21,9 +21,6 @@ function randomColor() {
 
 const DEFAULT_ITEMS: WheelItem[] = [
   { id: "1", label: "10 điểm" },
-  { id: "2", label: "15 điểm" },
-  { id: "3", label: "20 điểm" },
-  { id: "4", label: "25 điểm" },
 ]
 
 export default function JudgesWheelPage() {
@@ -213,7 +210,6 @@ export default function JudgesWheelPage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold">Vòng Quay May Mắn - Giám Khảo</h1>
-              <p className="text-white/80">Tùy chỉnh mục, giữ phong cách AIC</p>
             </div>
           </div>
         </div>
