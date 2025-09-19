@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Trash2, Edit, Plus, RefreshCcw, PlayCircle } from "lucide-react"
+import { Trash2, Edit, Plus, RefreshCcw, PlayCircle, X, PartyPopper } from "lucide-react"
 
 type WheelItem = {
   id: string
@@ -30,6 +30,7 @@ export default function JudgesWheelPage() {
   const [spinning, setSpinning] = useState(false)
   const [result, setResult] = useState<WheelItem | null>(null)
   const [openResult, setOpenResult] = useState(false)
+  const [showCelebration, setShowCelebration] = useState(false)
 
 
   // Persist to localStorage
@@ -126,6 +127,11 @@ export default function JudgesWheelPage() {
   function deleteItem(id: string) {
     setItems((prev) => prev.filter((x) => x.id !== id))
     if (editingId === id) resetForm()
+    if (result?.id === id) {
+      setResult(null)
+      setOpenResult(false)
+      setShowCelebration(false)
+    }
   }
 
   async function spinWheel() {
@@ -194,6 +200,7 @@ export default function JudgesWheelPage() {
           const index = Math.floor(((Math.PI * 2 - normalized) % (Math.PI * 2)) / anglePerSegment) % Math.max(1, segments)
           const winner = items[index]
           setResult(winner)
+          setShowCelebration(true)
           setOpenResult(true)
           setSpinning(false)
           resolve()
@@ -204,12 +211,34 @@ export default function JudgesWheelPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      {/* Hiệu ứng chúc mừng */}
+      {showCelebration && (
+        <div className="fixed inset-0 pointer-events-none z-50">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="animate-bounce text-6xl">
+              <PartyPopper className="text-yellow-400" />
+            </div>
+          </div>
+          <div className="absolute top-1/4 left-1/4 animate-bounce delay-100 text-4xl">
+            <PartyPopper className="text-pink-400" />
+          </div>
+          <div className="absolute top-1/3 right-1/4 animate-bounce delay-200 text-5xl">
+            <PartyPopper className="text-green-400" />
+          </div>
+          <div className="absolute bottom-1/3 left-1/3 animate-bounce delay-300 text-3xl">
+            <PartyPopper className="text-blue-400" />
+          </div>
+          <div className="absolute bottom-1/4 right-1/3 animate-bounce delay-500 text-4xl">
+            <PartyPopper className="text-purple-400" />
+          </div>
+        </div>
+      )}
       <header className="bg-gradient-to-r from-primary to-secondary text-white py-6">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold">Vòng Quay May Mắn - Giám Khảo</h1>
+              <h1 className="text-2xl font-bold">Random Wheel - Giám Khảo</h1>
             </div>
           </div>
         </div>
@@ -240,12 +269,11 @@ export default function JudgesWheelPage() {
           <Card className="hover-lift hover-glow transition-all duration-300">
             <CardHeader>
               <CardTitle className="text-primary">Danh sách mục</CardTitle>
-              <CardDescription>Thêm, sửa, xóa các mục hiển thị trên vòng quay</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={addOrUpdateItem} className="grid sm:grid-cols-3 gap-3 mb-6">
                 <div className="sm:col-span-3">
-                  <Label htmlFor="label">Nhãn</Label>
+                  <Label htmlFor="label">Thêm mục</Label>
                   <Input id="label" value={label} onChange={(e) => setLabel(e.target.value)} placeholder="Ví dụ: 10 điểm" />
                 </div>
                 <div className="sm:col-span-3 flex gap-3">
@@ -292,18 +320,48 @@ export default function JudgesWheelPage() {
         </div>
       </section>
 
-      <Dialog open={openResult} onOpenChange={setOpenResult}>
+      <Dialog open={openResult} onOpenChange={(open) => {
+        setOpenResult(open)
+        if (!open) {
+          setShowCelebration(false)
+        }
+      }}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Kết quả</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <PartyPopper className="w-5 h-5 text-yellow-500" />
+              Chúc mừng!
+            </DialogTitle>
             <DialogDescription>Mục trúng thưởng</DialogDescription>
           </DialogHeader>
-          <div className="flex items-center gap-3">
-            <span className="inline-block w-4 h-4 rounded-sm border" style={{ backgroundColor: result?.color || "#999" }} />
-            <span className="font-semibold">{result?.label}</span>
+          <div className="flex items-center gap-3 py-4">
+            <span className="inline-block w-6 h-6 rounded-sm border" style={{ backgroundColor: result?.color || "#999" }} />
+            <span className="font-semibold text-lg">{result?.label}</span>
           </div>
-          <DialogFooter>
-            <Button onClick={() => setOpenResult(false)}>Đóng</Button>
+          <DialogFooter className="flex gap-2">
+            <Button 
+              variant="destructive" 
+              onClick={() => {
+                if (result) {
+                  deleteItem(result.id)
+                }
+              }}
+              className="flex items-center gap-2"
+            >
+              <Trash2 className="w-4 h-4" />
+              Xóa mục này
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setOpenResult(false)
+                setShowCelebration(false)
+              }}
+              className="flex items-center gap-2"
+            >
+              <X className="w-4 h-4" />
+              Đóng
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
